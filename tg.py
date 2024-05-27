@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 from DatabaseIO import DatabaseIO
 matplotlib.use("Agg")
-app_token = "6611607409:AAGEPPaLyx9z-a07cqZl1l2exDAMXNaXDRs"
+app_token = "our_token"
 
 dp = Dispatcher()
 
