@@ -10,6 +10,8 @@ router = Router()
 
 builder = ReplyKeyboardBuilder()
 commands = ["/help", "/👛", "/📈"]
+for comm in commands:
+    builder.button(text=comm)
 
 
 class CommandsStates(StatesGroup):
@@ -26,6 +28,3 @@ db = DatabaseIO(user=user,
                 loop=loop)
 
 clear_states = InlineKeyboardBuilder().button(text="❌ Отменить", callback_data="clear_states")
-
-for comm in commands:
-    builder.button(text=comm)
