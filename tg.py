@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import sys
 from os import getenv
@@ -7,48 +6,21 @@ from aiogram import Bot, Dispatcher, html
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart
-from aiogram.filters import Command, CommandObject
 from aiogram.types import Message
-from aiogram.methods.send_photo import SendPhoto
-from aiogram.types import FSInputFile, reply_keyboard_markup, reply_keyboard_remove, keyboard_button, ContentType
-from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
-from aiogram.filters.state import State, StatesGroup
+from aiogram.types import FSInputFile
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
-from aiogram.types import InlineKeyboardButton, CallbackQuery
+from aiogram.types import CallbackQuery
 
 import yfinance as yf
 import pytz
 from datetime import datetime as dt
 import matplotlib.pyplot as plt
 import matplotlib
-from DatabaseIO import DatabaseIO
+
+from utils import *
+from config import app_token
 matplotlib.use("Agg")
-app_token = "6611607409:AAGEPPaLyx9z-a07cqZl1l2exDAMXNaXDRs"
-
-router = Router()
-
-builder = ReplyKeyboardBuilder()
-commands = ["/help", "/👛", "/📈"]
-
-
-class CommandsStates(StatesGroup):
-    graph_ticker_name = State()
-    graph_ticker_start_date = State()
-    graph_ticker_end_date = State()
-
-
-loop = asyncio.get_event_loop()
-db = DatabaseIO(user="postgres",
-                password="1",
-                database="postgres",
-                host="127.0.0.1",
-                loop=loop)
-
-clear_states = InlineKeyboardBuilder().button(text="❌ Отменить", callback_data="clear_states")
-
-for comm in commands:
-    builder.button(text=comm)
 
 
 @router.callback_query(F.data.startswith("clear_states"))
@@ -125,7 +97,7 @@ async def help_handler(msg: Message):
 
 
 @router.message(StateFilter(None), Command(commands=["👛"]))
-async def set_token_handler(msg: Message, command: CommandObject):
+async def set_token_handler(msg: Message):
     money_amount = await db.tasks_handler(f"SELECT user_money_USDT FROM users WHERE user_id={msg.from_user.id}")
     await msg.answer(f"👛 Ваш баланс: {money_amount[0][0]} USDT!")
 
