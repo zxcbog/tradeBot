@@ -105,9 +105,9 @@ async def message_handler(msg: Message, state: FSMContext):
 
 @router.message(CommandStart())
 async def start_handler(msg: Message):
-    result = await db.create_task(f"SELECT * FROM users WHERE user_id={msg.from_user.id}")
+    result = await db.tasks_handler(f"SELECT * FROM users WHERE user_id={msg.from_user.id}")
     if len(result) == 0:
-        result = await db.create_task(f"INSERT INTO users VALUES ({msg.from_user.id})")
+        result = await db.tasks_handler(f"INSERT INTO users VALUES ({msg.from_user.id})")
         await msg.answer(f"Привет, {html.bold(msg.from_user.full_name)}!", reply_markup=builder.as_markup())
     else:
         await msg.answer(f"Привет, {html.bold(msg.from_user.full_name)}, давно не виделись!", reply_markup=builder.as_markup())
@@ -126,7 +126,7 @@ async def help_handler(msg: Message):
 
 @router.message(StateFilter(None), Command(commands=["👛"]))
 async def set_token_handler(msg: Message, command: CommandObject):
-    money_amount = await db.create_task(f"SELECT user_money_USDT FROM users WHERE user_id={msg.from_user.id}")
+    money_amount = await db.tasks_handler(f"SELECT user_money_USDT FROM users WHERE user_id={msg.from_user.id}")
     await msg.answer(f"👛 Ваш баланс: {money_amount[0][0]} USDT!")
 
 

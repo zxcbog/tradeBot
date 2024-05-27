@@ -17,10 +17,6 @@ class DatabaseIO:
     async def make_conn(self):
         return await asyncpg.connect(user=self.user, password=self.password, database=self.database, host=self.host)
 
-    async def create_task(self, task):
-        task = self.loop.create_task(self.tasks_handler(task))
-        return await task
-
     async def tasks_handler(self, task):
         values = await self.conn.fetch(task)
         return values
