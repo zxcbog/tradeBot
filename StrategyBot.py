@@ -1,6 +1,7 @@
-import BotTrader_bybit
-import ccxt
-from config import BYBITAPIKEY, BYBITSECRETKEY, BYBITAPIKEYTEST, BYBITSECRETKEYTEST
+from config import BYBITAPIKEYTEST, BYBITSECRETKEYTEST
+from LSTM_MA_strategy import *
+import matplotlib.pyplot as plt
+
 
 class StrategyBot:
     def __init__(self):
@@ -8,6 +9,8 @@ class StrategyBot:
             "apiKey": BYBITAPIKEYTEST,
             "secret": BYBITSECRETKEYTEST
         })]
+        symbol = 'BTC/USDT'
+        self.strat = LSTMStrategy(symbol)
         self.bots[-1].set_sandbox_mode(True)
 
     @staticmethod
@@ -27,8 +30,10 @@ class StrategyBot:
             print(ans)
 
     def scan_strategy(self):
-        sig = self.create_signal("BTC/USDT", "market", "Buy", 1, 321312)
-        self.make_orders(sig)
+        sig_side = self.strat.generate_signal()
+
+        sig = self.create_signal("BTC/USDT", "market", sig_side, 1, 321312)
+        #self.make_orders(sig)
 
 bot = StrategyBot()
 bot.scan_strategy()
