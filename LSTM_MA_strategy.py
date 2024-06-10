@@ -18,10 +18,11 @@ class LSTMStrategy(Strategy):
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model = LSTM(5, 32, 1, self.device).to(self.device)
 
-    def generate_signal(self, test=False):
+    def generate_signal(self, last_action, test=False):
         self.load_weights("LSTMStrategy_weights.pth")
-        raw_sig, last_data = self.inference()
-
+        raw_sig, last_data = self.inference(last_action)
+        if len(raw_sig) == 0:
+            return None
         if test:
             plt.plot(last_data.x_raw_data[:, 0])
             for point in raw_sig:
@@ -29,7 +30,7 @@ class LSTMStrategy(Strategy):
             plt.show()
         return "Buy" if raw_sig[-1][1] == "green" else "Sell"
 
-    def inference(self, down_bound=-0.03, top_bound=0.017, stop_loss=0.1, start_date=None, end_date=None, history_window_size=48):
+    def inference(self, last_action, down_bound=-0.03, top_bound=0.017, stop_loss=0.1, start_date=None, end_date=None, history_window_size=48):
         points = []
         if start_date is None:
             start_date = (dt.today() - datetime.timedelta(days=15)).__str__()
@@ -39,8 +40,8 @@ class LSTMStrategy(Strategy):
         train_loader = last_data.get_loader_inference()
         self.model.eval()
         drsi_prev = 0
-        buy_price = 0
-        last_act = 0
+        buy_price = last_action[1]
+        last_act = last_action[0]
         with torch.no_grad():
             for i, data in enumerate(train_loader):
                 if i < len(train_loader) - 1:
