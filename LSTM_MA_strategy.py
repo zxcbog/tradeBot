@@ -22,13 +22,13 @@ class LSTMStrategy(Strategy):
         self.load_weights("LSTMStrategy_weights.pth")
         raw_sig, last_data = self.inference(last_action)
         if len(raw_sig) == 0:
-            return None
+            return None, None
         if test:
             plt.plot(last_data.x_raw_data[:, 0])
             for point in raw_sig:
                 plt.plot(point[0], last_data.x_raw_data[point[0], 0], 'ro', color=point[1])
             plt.show()
-        return "Buy" if raw_sig[-1][1] == "green" else "Sell"
+        return "Buy" if raw_sig[-1][1] == "green" else "Sell", last_data
 
     def inference(self, last_action, down_bound=-0.03, top_bound=0.017, stop_loss=0.1, start_date=None, end_date=None, history_window_size=48):
         points = []
