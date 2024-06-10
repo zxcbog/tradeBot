@@ -6,6 +6,9 @@ import queue
 
 
 class DatabaseIO:
+    '''
+    Class to make easy database IO operations
+    '''
     def __init__(self, user, password, database, host, loop):
         self.user = user
         self.password = password

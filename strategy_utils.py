@@ -6,7 +6,14 @@ import pandas_ta as ta
 from sklearn.preprocessing import MinMaxScaler
 from torch.utils.data import DataLoader
 
+
 def get_symbol_data(symbol, start_date):
+    '''
+    util function for fetching data from ccxt
+    :param symbol: symbol to fetch
+    :param start_date: the starting date of parsing
+    :return: parsed pandas dataframe
+    '''
     exchange = ccxt.bybit()
     exchange.load_markets()
 
@@ -37,6 +44,13 @@ def get_symbol_data(symbol, start_date):
 
 
 def fetch_crypto_data(symbol, start_date, end_date):
+    '''
+    fetch crypto data from ccxt
+    :param symbol: symbol to fetch
+    :param start_date: the starting date of parsing
+    :param end_date: the ending date of parsing
+    :return: parsed pandas dataframe
+    '''
     data = None
     while True:
         if data is None:
@@ -54,6 +68,9 @@ def fetch_crypto_data(symbol, start_date, end_date):
     return data
 
 class TimeSeriesDataset(torch.utils.data.Dataset):
+    '''
+    Custom dataset class for TimeSeries data based on pytorch.utils.data.Dataset
+    '''
     def __init__(self, X, y, sequence_size):
         self.X = X
         self.y = y
@@ -67,10 +84,19 @@ class TimeSeriesDataset(torch.utils.data.Dataset):
 
 
 def SMA(x, window_size, device):
+    '''
+    :param x: 1d vector
+    :param window_size: size of window for make SMA
+    :param device: device of data
+    :return: SMA of x
+    '''
     return torch.nn.functional.conv1d(x, torch.ones((1, 1, window_size)).to(device)) / window_size
 
 
 class CcxtDataProcessing:
+    '''
+    Preprocess symbol data from ccxt
+    '''
     def __init__(self, data, history_window_size):
         self.history_window_size = history_window_size
         data_to_train = data.copy()
@@ -92,12 +118,20 @@ class CcxtDataProcessing:
         self.scaler_y_val = MinMaxScaler(feature_range=(-1, 1))
 
     def get_loader_inference(self):
+        '''
+        method makes dataloader for inference(pytorch)
+        :return: dataloader
+        '''
         x_scaled = self.scaler_x_train.fit_transform(self.x_raw_data)
         dataset = TimeSeriesDataset(x_scaled, x_scaled, self.history_window_size)
         loader = DataLoader(dataset, batch_size=1, shuffle=False, drop_last=False)
         return loader
 
     def get_loaders_train(self, train_val_ratio, batch_size):
+        '''
+        method makes dataloaders for train and test(pytorch)
+        :return: dataloader for train and test
+        '''
         train_size = int(train_val_ratio * len(self.x_raw_data))
         x_train, x_val = torch.split(self.x_raw_data, train_size)
         y_train, y_val = torch.split(self.y_raw_data, train_size)

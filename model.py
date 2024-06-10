@@ -2,6 +2,9 @@ import torch, torch.nn as nn
 
 
 class LSTM(nn.Module):
+    '''
+    Default LSTM model
+    '''
     def __init__(self, input_size, hidden_size, num_stacked_layers, device):
         super().__init__()
         self.device = device

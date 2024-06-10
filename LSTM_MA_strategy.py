@@ -19,6 +19,12 @@ class LSTMStrategy(Strategy):
         self.model = LSTM(5, 32, 1, self.device).to(self.device)
 
     def generate_signal(self, last_action, test=False):
+        '''
+        postprocess signal data
+        :param last_action: last action made by strategy bot
+        :param test: if you need to plot results - test=True
+        :return: signal side and parsed symbol data
+        '''
         self.load_weights("LSTMStrategy_weights.pth")
         raw_sig, last_data = self.inference(last_action)
         if len(raw_sig) == 0:
@@ -31,6 +37,17 @@ class LSTMStrategy(Strategy):
         return "Buy" if raw_sig[-1][1] == "green" else "Sell", last_data
 
     def inference(self, last_action, down_bound=-0.03, top_bound=0.017, stop_loss=0.1, start_date=None, end_date=None, history_window_size=48):
+        '''
+        Function for inference generation of signal
+        :param last_action: last action made by bot
+        :param down_bound: lower bound for signal strategy
+        :param top_bound: higher bound for signal strategy
+        :param stop_loss: stop loss
+        :param start_date: start date for parsing data
+        :param end_date: end date for parsing data
+        :param history_window_size: window size for historical analysis
+        :return: generated signals and parsed data
+        '''
         points = []
         if start_date is None:
             start_date = (dt.today() - datetime.timedelta(days=15)).__str__()
@@ -93,6 +110,15 @@ class LSTMStrategy(Strategy):
         return CcxtDataProcessing(data, history_window_size)
 
     def train(self, train_epochs, start_date, end_date, batch_size, history_window_size, val_ratio):
+        '''
+
+        :param train_epochs: epochs to train
+        :param start_date: start date for parse data
+        :param end_date: end date for parse data
+        :param batch_size: batch_size for dataloader
+        :param history_window_size: window size for historical analysis
+        :param val_ratio: ratio between train and validation data in dataloader
+        '''
         processed_data = self.prepare_data_to_train(self.symbol, start_date, end_date, history_window_size)
         train_loader, test_loader = processed_data.get_loaders_train(val_ratio, batch_size)
         optim = torch.optim.Adam(self.model.parameters(), lr=0.001, weight_decay=1e-3)

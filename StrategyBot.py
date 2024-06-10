@@ -6,6 +6,9 @@ from DatabaseIO import DatabaseIO
 
 
 class StrategyBot:
+    '''
+    Bot that can make decisions based of strategies. By default it using Strategy based on LSTM neural net.
+    '''
     def __init__(self):
         self.bots = [ccxt.bybit({
             "apiKey": BYBITAPIKEYTEST,
@@ -21,6 +24,15 @@ class StrategyBot:
 
     @staticmethod
     def create_signal(symbol: str, type: str, side: str, amount: float, price: float = 0):
+        '''
+
+        :param symbol: Symbol from market
+        :param type: Type of order(limit of market)
+        :param side: Side of order(Buy or Sell)
+        :param amount: amount of symbol for order
+        :param price: price for limit order
+        :return: signal
+        '''
         signal = {
             'symbol': symbol,
             'type': type,
@@ -31,6 +43,9 @@ class StrategyBot:
         return signal
 
     def make_orders(self, sig):
+        '''
+        :param sig: Signal to make order
+        '''
         for bot in self.bots:
             ans = bot.create_order(symbol=sig['symbol'], type=sig['type'], side=sig['side'], amount=sig['amount'], price=sig['price'])
             self.loop.run_until_complete(self.database_io.tasks_handler(
@@ -39,6 +54,9 @@ class StrategyBot:
             print(ans)
 
     def scan_strategy(self):
+        '''
+        Method for scan signals from strategies. Strategies mast be in self.strat
+        '''
         #1 - buy -1 - sell
         if self.balance == 0:
             raise Exception("No money on balance!")
