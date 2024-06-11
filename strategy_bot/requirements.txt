@@ -1,0 +1,9 @@
+pandas-ta
+aiogram
+scikit-learn
+yfinance
+pytz
+matplotlib
+ccxt
+asyncpg
+torch

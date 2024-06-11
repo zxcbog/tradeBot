@@ -1,0 +1,6 @@
+BYBITAPIKEYTEST = "0"
+BYBITSECRETKEYTEST = "0"
+user="postgres"
+passwd="1"
+dbase="postgres"
+host="127.0.0.1"
