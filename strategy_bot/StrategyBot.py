@@ -7,7 +7,7 @@ from DatabaseIO import DatabaseIO
 
 class StrategyBot:
     '''
-    Bot that can make decisions based of strategies. By default it using Strategy based on LSTM neural net.
+    Bot that can make decisions based on strategies. By default it using Strategy based on LSTM neural net.
     '''
     def __init__(self):
         self.bots = [ccxt.bybit({
