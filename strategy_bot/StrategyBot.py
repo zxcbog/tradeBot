@@ -55,7 +55,7 @@ class StrategyBot:
 
     def scan_strategy(self):
         '''
-        Method for scan signals from strategies. Strategies mast be in self.strat
+        Method for scan signals from strategies. Strategies must be in self.strat
         '''
         #1 - buy -1 - sell
         if self.balance == 0:
